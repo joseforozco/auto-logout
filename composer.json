@@ -16,12 +16,18 @@
         "issues": "https://github.com/joseforozco/filament-auto-logout/issues",
         "source": "https://github.com/joseforozco/filament-auto-logout"
     },
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Madalin Tache",
             "email": "niladam@gmail.com",
             "role": "Original Author"
+        },
+        {
+            "name": "joseforozco",
+            "homepage": "https://github.com/joseforozco",
+            "role": "Maintainer"
         }
     ],
     "require": {

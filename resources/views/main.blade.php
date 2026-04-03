@@ -1,6 +1,6 @@
 @if($enabled)
     @auth
-        <script src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('filament-auto-logout', 'niladam/filament-auto-logout') }}"></script>
+        <script src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('filament-auto-logout', 'joseforozco/filament-auto-logout') }}"></script>
         <form id="auto-logout-form"
               data-auto-logout-enabled="{{ $enabled }}"
               action="{{ $logout_url }}"

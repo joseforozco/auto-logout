@@ -25,7 +25,7 @@ class AutoLogoutServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
-                    ->askToStarRepoOnGitHub('joseforozco/filament-auto-logout');
+                    ->askToStarRepoOnGitHub('joseforozco/auto-logout');
             });
 
         $configFileName = $package->shortName();

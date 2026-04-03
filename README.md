@@ -29,7 +29,7 @@ Plugin para FilamentPHP que cierra la sesión de los usuarios de forma automáti
 ## Instalación
 
 ```bash
-composer require joseforozco/filament-auto-logout
+composer require joseforozco/auto-logout
 ```
 
 Ejecuta el instalador del paquete:
