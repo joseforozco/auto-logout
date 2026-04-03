@@ -1,6 +1,6 @@
 <?php
 
-namespace Niladam\FilamentAutoLogout;
+namespace Joseforozco\FilamentAutoLogout;
 
 use Filament\Auth\Http\Controllers\LogoutController;
 use Filament\Support\Assets\AlpineComponent;
@@ -25,7 +25,7 @@ class AutoLogoutServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
-                    ->askToStarRepoOnGitHub('niladam/filament-auto-logout');
+                    ->askToStarRepoOnGitHub('joseforozco/filament-auto-logout');
             });
 
         $configFileName = $package->shortName();
@@ -52,7 +52,7 @@ class AutoLogoutServiceProvider extends PackageServiceProvider
 
     protected function getAssetPackageName(): ?string
     {
-        return 'niladam/filament-auto-logout';
+        return 'joseforozco/filament-auto-logout';
     }
 
     /**

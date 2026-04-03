@@ -2,6 +2,15 @@
 
 All notable changes to `filament-auto-logout` will be documented in this file.
 
+## 3.0.0 - 2026-04-03
+
+### What's Changed
+
+* Add Filament v5 support
+* Add Spanish (es) translations
+
+**Full Changelog**: https://github.com/niladam/filament-auto-logout/compare/2.0.0...3.0.0
+
 ## 2.0.0 - 2025-11-11
 
 ### What's Changed

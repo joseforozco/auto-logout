@@ -1,145 +1,163 @@
-# A filament plugin that auto logs out your users if they are idle. Works with multiple tabs.
+# FilamentPHP Auto Logout
 
-<br>
+Plugin para FilamentPHP que cierra la sesión de los usuarios de forma automática cuando están inactivos. Funciona correctamente con múltiples pestañas abiertas.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/niladam/filament-auto-logout.svg?style=flat-square)](https://packagist.org/packages/niladam/filament-auto-logout)
-[![Total Downloads](https://img.shields.io/packagist/dt/niladam/filament-auto-logout.svg?style=flat-square)](https://packagist.org/packages/niladam/filament-auto-logout)
+> **Este paquete es un fork de [niladam/filament-auto-logout](https://github.com/niladam/filament-auto-logout).**
+> Se han incorporado compatibilidad con Filament v5 y traducción al español.
 
+---
 
-#### Compatibility
+## Compatibilidad
 
-| Package Version                                                | Filament Version                                             | 
-|----------------------------------------------------------------|--------------------------------------------------------------|
-| [v1](https://github.com/niladam/filament-auto-logout/tree/1.x) | [v3](https://filamentphp.com/docs/3.x/panels/installation)   |
-| v2                                                             | [v4](https://filamentphp.com/docs/4.x/introduction/overview) |
+| Versión del paquete | Filament |
+|---|---|
+| v3 (este fork) | [v3](https://filamentphp.com/docs/3.x/panels/installation) · [v4](https://filamentphp.com/docs/4.x/introduction/overview) · [v5](https://filamentphp.com/docs/5.x/introduction/overview) |
 
-## Installation
+---
 
-You can install the package via composer:
+## ¿Qué hace este plugin?
+
+- Detecta la inactividad del usuario (sin movimiento de ratón, teclado ni interacción).
+- Muestra una **notificación de advertencia** antes de cerrar sesión.
+- Muestra un **contador de tiempo restante** en la barra superior del panel.
+- Sincroniza el temporizador entre múltiples pestañas del mismo navegador.
+- Totalmente configurable: duración, advertencia, color, ícono y ubicación del badge.
+- Soporte de traducciones: `en`, `es`, `ar`, `ro`.
+
+---
+
+## Instalación
 
 ```bash
-composer require niladam/filament-auto-logout
+composer require joseforozco/filament-auto-logout
 ```
 
-## Install the package
+Ejecuta el instalador del paquete:
 
 ```bash
 php artisan filament-auto-logout:install
 ```
 
-You can publish the config file with:
+Publica los assets de Filament:
+
+```bash
+php artisan filament:assets
+```
+
+---
+
+## Configuración
+
+Puedes publicar el archivo de configuración con:
 
 ```bash
 php artisan vendor:publish --tag="filament-auto-logout-config"
 ```
 
-This is the contents of the published config file:
+Contenido del archivo de configuración:
 
 ```php
 use Carbon\Carbon;
 use Filament\View\PanelsRenderHook;
 
 return [
-    /**
-     * Disable or enable the plugin
-     */
+    // Habilitar o deshabilitar el plugin
     'enabled' => env('FILAMENT_AUTO_LOGOUT_ENABLED', true),
 
-    /**
-     * The duration in seconds your users can be idle before being logged out.
-     *
-     * The duration needs to be specified in seconds.
-     *
-     * A sensible default has been set to 15 minutes
-     */
+    // Tiempo de inactividad en segundos antes de cerrar sesión (por defecto: 15 minutos)
     'duration_in_seconds' => env('FILAMENT_AUTO_LOGOUT_DURATION_IN_SECONDS', Carbon::SECONDS_PER_MINUTE * 15),
 
-    /**
-     * A notification will be sent to the user before logging out.
-     *
-     * This sets the seconds BEFORE sending out the notification.
-     */
+    // Segundos antes del cierre de sesión en los que se muestra la advertencia
     'warn_before_in_seconds' => env('FILAMENT_AUTO_LOGOUT_WARN_BEFORE_IN_SECONDS', 30),
 
-    /**
-     * The plugin comes with a small time left box which will display the time left
-     * before the user will be logged out.
-     */
+    // Mostrar el contador de tiempo restante en el panel
     'show_time_left' => env('FILAMENT_AUTO_LOGOUT_SHOW_TIME_LEFT', true),
 
-    /**
-     * What should the time left box display before the timer?
-     *
-     * A default has been set to 'Time left:'
-     */
+    // Texto que aparece antes del contador
     'time_left_text' => env('FILAMENT_AUTO_LOGOUT_TIME_LEFT_TEXT', 'Time left:'),
 
-    /**
-     * Where should the badge be rendered?
-     *
-     * @see https://filamentphp.com/docs/3.x/support/render-hooks#available-render-hooks for a list of supported hooks.
-     */
+    // Ubicación del badge dentro del panel
     'location' => env('FILAMENT_AUTO_LOGOUT_LOCATION', PanelsRenderHook::GLOBAL_SEARCH_BEFORE),
 ];
 ```
 
-## Usage
+También puedes configurar variables de entorno en tu `.env`:
 
-### Quick Usage:
-
-```php
-$panel
-    ->plugins([
-        AutoLogoutPlugin::make(),
-    ]);
+```env
+FILAMENT_AUTO_LOGOUT_ENABLED=true
+FILAMENT_AUTO_LOGOUT_DURATION_IN_SECONDS=900
+FILAMENT_AUTO_LOGOUT_WARN_BEFORE_IN_SECONDS=30
+FILAMENT_AUTO_LOGOUT_SHOW_TIME_LEFT=true
+FILAMENT_AUTO_LOGOUT_TIME_LEFT_TEXT="Tiempo restante:"
 ```
 
-### Customised Usage
+---
+
+## Uso
+
+### Básico
+
+En tu `PanelProvider` (`app/Providers/Filament/AdminPanelProvider.php`):
+
+```php
+use Joseforozco\FilamentAutoLogout\AutoLogoutPlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugins([
+            AutoLogoutPlugin::make(),
+        ]);
+}
+```
+
+### Personalizado
 
 ```php
 use Carbon\Carbon;
 use Filament\Support\Colors\Color;
-use Niladam\FilamentAutoLogout\AutoLogoutPlugin;
+use Joseforozco\FilamentAutoLogout\AutoLogoutPlugin;
 
-$panel
-    ->plugins([
-        AutoLogoutPlugin::make()
-            ->color(Color::Emerald)                             // Set the color. Defaults to Color::Stone
-            ->icon('heroicon-o-arrow-right-start-on-rectangle') // Change the icon. Defaults to 'heroicon-o-clock' 
-            ->disableIf(fn () => auth()->id() === 1)            // Disable the user with ID 1
-            ->logoutAfter(Carbon::SECONDS_PER_MINUTE * 5)       // Logout the user after 5 minutes
-            ->withoutWarning()                                  // Disable the warning before logging out
-            ->withoutTimeLeft()                                 // Disable the time left
-            ->timeLeftText('Oh no. Kicking you in...')          // Change the time left text
-            ->timeLeftText('')                                  // Remove the time left text (displays only countdown)
-    ]);
+->plugins([
+    AutoLogoutPlugin::make()
+        ->color(Color::Emerald)                              // Color del badge (por defecto: Color::Stone)
+        ->icon('heroicon-o-arrow-right-start-on-rectangle')  // Ícono del badge (por defecto: heroicon-o-clock)
+        ->logoutAfter(Carbon::SECONDS_PER_MINUTE * 5)        // Cerrar sesión tras 5 minutos de inactividad
+        ->warnBefore(60)                                     // Advertir 60 segundos antes
+        ->withoutWarning()                                   // Deshabilitar la notificación de advertencia
+        ->withoutTimeLeft()                                  // Ocultar el contador de tiempo
+        ->timeLeftText('Tiempo restante:')                   // Personalizar el texto del contador
+        ->disableIf(fn () => auth()->id() === 1)             // Deshabilitar para el usuario con ID 1
+        ->enableIf(fn () => auth()->user()->hasRole('admin')) // Habilitar solo para admins
+])
 ```
 
-## Translations
+---
 
-This package has multi-language support. So you will have to first publish the translations using:
+## Traducciones
+
+El plugin incluye soporte para múltiples idiomas: `en`, `es`, `ar`, `ro`.
+
+Para publicar y personalizar las traducciones:
 
 ```bash
 php artisan vendor:publish --tag="filament-auto-logout-translations"
 ```
 
+Los archivos se publicarán en `lang/vendor/filament-auto-logout/`.
+
+---
+
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Ver [CHANGELOG](CHANGELOG.md) para el historial de cambios.
 
-## Contributing
+## Créditos
 
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
+- [Madalin Tache](https://github.com/niladam) — autor original
+- [joseforozco](https://github.com/joseforozco) — fork con soporte Filament v5 y traducción ES
 
-## Security Vulnerabilities
+## Licencia
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Madalin Tache](https://github.com/niladam)
-- [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT. Ver [LICENSE](LICENSE.md) para más información.

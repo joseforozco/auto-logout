@@ -1,6 +1,6 @@
 <?php
 
-namespace Niladam\FilamentAutoLogout;
+namespace Joseforozco\FilamentAutoLogout;
 
 use Carbon\Carbon;
 use Closure;
